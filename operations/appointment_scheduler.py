@@ -6,7 +6,6 @@ Appointment Scheduler for Small Business
 - Exports .ics calendar invites
 """
 import openai
-import pandas as pd
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 from utils.config import OPENAI_API_KEY

@@ -14,6 +14,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from typing import Optional
 import os
+import csv
 
 openai.api_key = OPENAI_API_KEY
 
@@ -61,17 +62,34 @@ def summarize_with_openai(df: pd.DataFrame) -> str:
     )
     return response.choices[0].message.content.strip()
 
+def load_testimonials(filepath: str = "data/sample_testimonials.csv", n: int = 3) -> list:
+    try:
+        with open(filepath, mode='r', encoding='utf-8') as f:
+            return list(csv.DictReader(f))[:n]
+    except Exception:
+        return []
+
 def generate_pdf_report(sales_csv: str, sentiment_csv: Optional[str], out_pdf: str) -> None:
     df = load_data(sales_csv, sentiment_csv)
     plot_path = "sales_plot.png"
     plot_sales(df, plot_path)
     summary = summarize_with_openai(df)
+    testimonials = load_testimonials()
     c = canvas.Canvas(out_pdf, pagesize=letter)
     c.setFont("Helvetica-Bold", 16)
     c.drawString(72, 750, "Monthly Business Report")
     c.setFont("Helvetica", 12)
     c.drawString(72, 730, summary)
     c.drawImage(plot_path, 72, 500, width=400, height=200)
+    y = 480
+    if testimonials:
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(72, y, "Customer Testimonials:")
+        y -= 20
+        c.setFont("Helvetica", 11)
+        for t in testimonials:
+            c.drawString(80, y, f"- {t['customer']}: '{t['quote']}' (Rating: {t['rating']}/5)")
+            y -= 16
     c.save()
     os.remove(plot_path)
     print(f"PDF report saved to {out_pdf}")

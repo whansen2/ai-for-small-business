@@ -5,12 +5,9 @@ Sentiment analysis for customer emails, messages, or reviews using OpenAI.
 - Outputs to terminal or .csv
 """
 import openai
-import pandas as pd
 from typing import List, Dict, Optional
 from utils.config import OPENAI_API_KEY
 from utils.file_io import read_csv, write_csv
-import sys
-import os
 
 openai.api_key = OPENAI_API_KEY
 

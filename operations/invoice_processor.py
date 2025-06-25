@@ -6,7 +6,7 @@ import pytesseract
 from pdf2image import convert_from_path
 import os
 import re
-from typing import List, Dict
+from typing import Dict
 from utils.file_io import write_csv
 
 def extract_fields(text: str) -> Dict[str, str]:

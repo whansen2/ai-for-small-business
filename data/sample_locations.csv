@@ -1,0 +1,4 @@
+location,address,phone,hours
+Main Store,"123 Main St, Springfield, IL",(217) 555-0100,"Mon-Fri 8am-6pm; Sat 9am-3pm"
+Eastside Branch,"456 Oak Ave, Springfield, IL",(217) 555-0111,"Mon-Fri 9am-5pm"
+Westside Branch,"789 Maple Rd, Springfield, IL",(217) 555-0122,"Mon-Fri 10am-7pm; Sat 10am-2pm"

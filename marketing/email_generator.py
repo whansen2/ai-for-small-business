@@ -7,6 +7,7 @@ Marketing Email Generator using OpenAI
 import openai
 from typing import Tuple
 from utils.config import OPENAI_API_KEY
+import csv
 import os
 
 openai.api_key = OPENAI_API_KEY
@@ -49,16 +50,38 @@ def save_email_files(subject: str, plain: str, html: str, out_dir: str = "genera
     with open(base + ".html", "w", encoding="utf-8") as f:
         f.write(f"<h2>{subject}</h2>\n{html}")
 
+def load_promotions(filepath: str = "data/sample_promotions.csv") -> list:
+    try:
+        with open(filepath, mode='r', encoding='utf-8') as f:
+            return list(csv.DictReader(f))
+    except Exception:
+        return []
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Marketing Email Generator")
     parser.add_argument("--business_type", required=True, type=str, help="Type of business")
-    parser.add_argument("--offer_description", required=True, type=str, help="Offer description")
+    parser.add_argument("--offer_description", type=str, help="Offer description")
     parser.add_argument("--tone", required=True, type=str, help="Email tone (e.g., friendly, formal)")
+    parser.add_argument("--promotion", action="store_true", help="Use a current promotion from sample_promotions.csv")
     parser.add_argument("--out_dir", type=str, default="generated_emails", help="Output directory")
     args = parser.parse_args()
 
-    subject, plain, html = generate_email(args.business_type, args.offer_description, args.tone)
+    offer_description = args.offer_description
+    if args.promotion:
+        promotions = load_promotions()
+        if promotions:
+            promo = promotions[0]  # Use the first valid promotion
+            offer_description = f"{promo['promotion']}: {promo['description']} (Valid until {promo['valid_until']})"
+            print(f"Using promotion: {offer_description}")
+        else:
+            print("No promotions found. Please provide --offer_description.")
+            return
+    elif not offer_description:
+        print("You must provide --offer_description or use --promotion.")
+        return
+
+    subject, plain, html = generate_email(args.business_type, offer_description, args.tone)
     print(f"Subject: {subject}\n\nPlain Text:\n{plain}\n\nHTML:\n{html}")
     save_email_files(subject, plain, html, args.out_dir)
     print(f"Saved to {args.out_dir}")
