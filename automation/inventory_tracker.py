@@ -31,6 +31,24 @@ def get_restock_items(inventory: List[Dict[str, str]]) -> List[Dict[str, str]]:
             continue
     return restock
 
+def extract_json_from_response(response_content: str):
+    """Extract JSON object from OpenAI response, stripping markdown/code block if present. No regex."""
+    import json
+    content = response_content.strip()
+    # Remove code block markers if present
+    if content.startswith('```json'):
+        content = content[len('```json'):].strip()
+    if content.startswith('```'):
+        content = content[len('```'):].strip()
+    if content.endswith('```'):
+        content = content[:-3].strip()
+    # Find the first '{' and last '}'
+    start = content.find('{')
+    end = content.rfind('}')
+    if start != -1 and end != -1 and end > start:
+        content = content[start:end+1]
+    return json.loads(content)
+
 def generate_restock_summary(restock_items: List[Dict[str, str]]) -> Dict[str, str]:
     """Use OpenAI to generate summary and email draft."""
     items_str = "\n".join([f"{i['item']}: {i['stock']} in stock (threshold {i['threshold']})" for i in restock_items])
@@ -39,13 +57,12 @@ def generate_restock_summary(restock_items: List[Dict[str, str]]) -> Dict[str, s
         {"role": "system", "content": RESTOCK_PROMPT},
         {"role": "user", "content": prompt}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         max_tokens=300
     )
-    import json
-    return json.loads(response.choices[0].message.content)
+    return extract_json_from_response(response.choices[0].message.content)
 
 def save_email_draft(email: str, out_path: str) -> None:
     with open(out_path, 'w', encoding='utf-8') as f:

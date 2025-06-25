@@ -65,7 +65,7 @@ def ask_faq_bot(user_question: str) -> str:
         {"role": "user", "content": user_question}
     ]
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-4o",
             messages=messages,
             max_tokens=300

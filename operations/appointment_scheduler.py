@@ -27,30 +27,32 @@ def get_available_slots(
     working_hours: Tuple[str, str],
     bookings: List[Dict[str, str]],
     slot_minutes: int = 30,
-    days_ahead: int = 7
+    days_ahead: int = 7,
+    start_date: str = None
 ) -> List[Tuple[str, str, str]]:
-    """Suggest available slots for the next 7 days."""
+    """Suggest available slots for the next 7 days. Optionally specify start_date as 'YYYY-MM-DD'."""
+    if start_date:
+        today = datetime.strptime(start_date, "%Y-%m-%d").date()
+    else:
+        today = datetime.now().date()
     start_hour, end_hour = [datetime.strptime(h, "%H:%M").time() for h in working_hours]
-    today = datetime.now().date()
     slots = []
     for day in range(days_ahead):
         date = today + timedelta(days=day)
         current = datetime.combine(date, start_hour)
         end = datetime.combine(date, end_hour)
         while current + timedelta(minutes=slot_minutes) <= end:
-            slot_start = current.time().strftime("%H:%M")
-            slot_end = (current + timedelta(minutes=slot_minutes)).time().strftime("%H:%M")
-            # Check for overlap
-            overlap = False
+            slot_start = current.time()
+            slot_end = (current + timedelta(minutes=slot_minutes)).time()
+            overlaps = []
             for b in bookings:
                 if b['date'] == str(date):
                     b_start = datetime.strptime(b['start_time'], "%H:%M").time()
                     b_end = datetime.strptime(b['end_time'], "%H:%M").time()
-                    if not (slot_end <= b_start.strftime("%H:%M") or slot_start >= b_end.strftime("%H:%M")):
-                        overlap = True
-                        break
-            if not overlap:
-                slots.append((str(date), slot_start, slot_end))
+                    overlap = (slot_start < b_end) and (slot_end > b_start)
+                    overlaps.append(overlap)
+            if not any(overlaps):
+                slots.append((str(date), slot_start.strftime("%H:%M"), slot_end.strftime("%H:%M")))
             current += timedelta(minutes=slot_minutes)
     return slots
 
@@ -62,7 +64,7 @@ def format_slots_human(slots: List[Tuple[str, str, str]]) -> str:
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": prompt}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         max_tokens=200

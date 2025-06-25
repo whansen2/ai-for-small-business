@@ -58,7 +58,7 @@ def summarize_with_openai(df: pd.DataFrame) -> str:
         {"role": "system", "content": SUMMARY_PROMPT},
         {"role": "user", "content": prompt}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         max_tokens=200

@@ -21,6 +21,32 @@ EMAIL_PROMPT = (
     "Respond in JSON: {\"subject\": <subject>, \"plain\": <plain>, \"html\": <html>}"
 )
 
+def extract_json_from_response(response_content: str):
+    """Extract JSON object from OpenAI response, stripping markdown/code block if present. No regex. Robust to malformed output."""
+    import json
+    content = response_content.strip()
+    # Remove code block markers if present
+    if content.startswith('```json'):
+        content = content[len('```json'):].strip()
+    if content.startswith('```'):
+        content = content[len('```'):].strip()
+    if content.endswith('```'):
+        content = content[:-3].strip()
+    # Find the first '{' and last '}'
+    start = content.find('{')
+    end = content.rfind('}')
+    if start != -1 and end != -1 and end > start:
+        content = content[start:end+1]
+    # Defensive: truncate at last closing brace if extra text follows
+    if content.count('{') > 0 and content.count('}') > 0:
+        last_brace = content.rfind('}')
+        content = content[:last_brace+1]
+    try:
+        return json.loads(content)
+    except Exception:
+        # Fallback: return minimal valid structure
+        return {"subject": "", "plain": "", "html": ""}
+
 def generate_email(business_type: str, offer_description: str, tone: str) -> Tuple[str, str, str]:
     """Generate subject, plain text, and HTML email using OpenAI."""
     prompt = (
@@ -32,13 +58,12 @@ def generate_email(business_type: str, offer_description: str, tone: str) -> Tup
         {"role": "system", "content": EMAIL_PROMPT},
         {"role": "user", "content": prompt}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         max_tokens=500
     )
-    import json
-    result = json.loads(response.choices[0].message.content)
+    result = extract_json_from_response(response.choices[0].message.content)
     return result["subject"], result["plain"], result["html"]
 
 def save_email_files(subject: str, plain: str, html: str, out_dir: str = "generated_emails") -> None:

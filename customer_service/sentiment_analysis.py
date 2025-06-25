@@ -18,19 +18,40 @@ SENTIMENT_PROMPT = (
     "Respond in JSON: {\"sentiment\": <sentiment>, \"reasoning\": <reasoning>}"
 )
 
+def extract_json_from_response(response_content: str):
+    """Extract JSON object from OpenAI response, stripping markdown/code block if present. No regex. Robust to malformed output."""
+    import json
+    content = response_content.strip()
+    if content.startswith('```json'):
+        content = content[len('```json'):].strip()
+    if content.startswith('```'):
+        content = content[len('```'):].strip()
+    if content.endswith('```'):
+        content = content[:-3].strip()
+    start = content.find('{')
+    end = content.rfind('}')
+    if start != -1 and end != -1 and end > start:
+        content = content[start:end+1]
+    if content.count('{') > 0 and content.count('}') > 0:
+        last_brace = content.rfind('}')
+        content = content[:last_brace+1]
+    try:
+        return json.loads(content)
+    except Exception:
+        return {"sentiment": "", "reasoning": ""}
+
 def analyze_sentiment(text: str) -> Dict[str, str]:
     """Analyze sentiment of a single string using OpenAI."""
     messages = [
         {"role": "system", "content": SENTIMENT_PROMPT},
         {"role": "user", "content": text}
     ]
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o",
         messages=messages,
         max_tokens=100
     )
-    import json
-    return json.loads(response.choices[0].message.content)
+    return extract_json_from_response(response.choices[0].message.content)
 
 def analyze_csv(input_csv: str, text_column: str = "text", output_csv: Optional[str] = None) -> List[Dict[str, str]]:
     """Analyze sentiment for each row in a CSV file."""
