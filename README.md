@@ -8,6 +8,7 @@ A robust, production-grade Python AI toolkit for small business owners. Focused 
 - **Analytics**: Sales forecasting (Prophet, ARIMA, Linear Regression), KPI dashboard (Streamlit, PDF export, advanced metrics)
 - **Operations**: Invoice OCR & extraction (robust, preserves original formatting), appointment scheduler (with .ics export, flexible slot logic)
 - **Automation**: Monthly PDF business reports (with sales, sentiment, testimonials), inventory tracker (restock summary, email draft)
+- **Finance**: AI-powered expense tracker (CSV/PDF import, OpenAI categorization, cash flow summaries, anomaly detection, QuickBooks/Xero export)
 - **Utils**: Helpers for CSV, JSON, PDF, and secure config loading
 - **Comprehensive sample data**: Realistic, safe, and fictitious CSVs for all modules
 - **Comprehensive test suite**: Pytest-based, with OpenAI call mocking, robust edge/cross-module/component tests
@@ -57,6 +58,7 @@ ai-for-small-business/
 ├── analytics/                # Sales forecast, KPI dashboard
 ├── operations/               # Invoice processor, appointment scheduler
 ├── automation/               # Report generator, inventory tracker
+├── finance/                  # Expense tracker (bookkeeping, cash flow)
 ├── utils/                    # file_io.py, config.py
 ├── data/                     # Realistic sample CSVs
 ├── tests/                    # Pytest suite for all modules
@@ -80,3 +82,15 @@ Pull requests welcome! Focus on practical, simple solutions that serve small bus
 
 ## License
 MIT License
+
+## Finance Module: Expense Tracker
+- **Location:** `finance/expense_tracker.py`
+- **Features:**
+  - Import CSV or PDF bank/credit card transactions
+  - Categorize expenses using OpenAI (e.g., Office, Marketing, Supplies, etc.)
+  - Monthly cash flow summaries and anomaly detection
+  - Export categorized data to QuickBooks/Xero CSV
+- **Sample Data:** `data/sample_bank.csv`
+- **Tests:**
+  - Unit: `tests/unit/test_expense_tracker.py`
+  - Component: `tests/component/test_expense_tracker_component.py` (requires OpenAI API key)

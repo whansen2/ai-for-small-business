@@ -26,17 +26,23 @@ ai-for-small-business/
 │   ├── report_generator.py
 │   └── inventory_tracker.py
 │
+├── finance/
+│   └── expense_tracker.py
+│
 ├── utils/
 │   ├── file_io.py
 │   └── config.py
 │
 ├── data/
 │   ├── sample_emails.csv
+│   ├── sample_bank.csv
 │   └── invoices/
 │
 ├── tests/
 │   ├── test_email_generator.py
-│   └── test_sales_forecast.py
+│   ├── test_sales_forecast.py
+│   ├── unit/
+│   └── component/
 │
 ├── .env.example
 ├── README.md
@@ -180,6 +186,22 @@ Human-readable restock summary (via OpenAI)
 Optional email draft (save to .txt)
 
 Restock CSV
+
+💸 finance/
+expense_tracker.py
+AI-powered expense tracker for bookkeeping and cash flow automation.
+
+Read CSV or PDF bank/credit card transactions (see `data/sample_bank.csv`)
+
+Categorize expenses using OpenAI (e.g., Office, Marketing, Supplies, etc.)
+
+Produce monthly cash flow summaries and highlight anomalies
+
+Export categorized data to QuickBooks/Xero CSV
+
+Unit tests: `tests/unit/test_expense_tracker.py`
+
+Component tests: `tests/component/test_expense_tracker_component.py` (requires OpenAI API key)
 
 🧰 utils/
 file_io.py
