@@ -1,0 +1,5 @@
+Vendor: Acme Supplies
+Date: 2024-01-15
+Total Amount: $1,250.00
+
+Thank you for your business!
