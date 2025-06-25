@@ -42,6 +42,9 @@ def plot_sales(df: pd.DataFrame, out_path: str) -> None:
     plt.close()
 
 def summarize_with_openai(df: pd.DataFrame) -> str:
+    # Ensure date column is datetime
+    if not pd.api.types.is_datetime64_any_dtype(df['date']):
+        df['date'] = pd.to_datetime(df['date'])
     sales_stats = {
         'total_sales': df['sales'].sum(),
         'avg_sales': df['sales'].mean(),

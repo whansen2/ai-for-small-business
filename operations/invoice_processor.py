@@ -10,15 +10,28 @@ from typing import Dict
 from utils.file_io import write_csv
 
 def extract_fields(text: str) -> Dict[str, str]:
-    """Extract vendor, date, and total amount from invoice text."""
-    vendor = re.search(r"Vendor: ([\w\s]+)", text)
-    date = re.search(r"Date: ([\d-]+)", text)
-    total = re.search(r"Total Amount: \$?([\d,\.]+)", text)
-    return {
-        "vendor": vendor.group(1).strip() if vendor else "",
-        "date": date.group(1).strip() if date else "",
-        "total_amount": total.group(1).strip() if total else ""
-    }
+    """Extract vendor, date, and total amount from invoice text using robust line-by-line parsing. Preserves original formatting."""
+    fields = {"vendor": "", "date": "", "total_amount": ""}
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # Case-insensitive and flexible matching
+        if line.lower().startswith("vendor"):
+            parts = line.split(":", 1)
+            if len(parts) > 1:
+                fields["vendor"] = parts[1].strip()
+        elif line.lower().startswith("date"):
+            parts = line.split(":", 1)
+            if len(parts) > 1:
+                fields["date"] = parts[1].strip()
+        elif "total amount" in line.lower():
+            parts = line.split(":", 1)
+            if len(parts) > 1:
+                # Remove $ only, preserve commas and decimals
+                value = parts[1].replace("$", "").strip()
+                fields["total_amount"] = value
+    return fields
 
 def process_invoice_file(filepath: str) -> Dict[str, str]:
     """Process a single invoice file (image, PDF, or text)."""
