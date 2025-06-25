@@ -56,29 +56,45 @@ if not df.empty:
     sentiment_summary = load_sentiment_summary()
     st.info(sentiment_summary)
 
-    # Revenue trend
-    st.subheader("Revenue Trend")
-    fig1, ax1 = plt.subplots()
-    ax1.plot(df['date'], df['revenue'], marker='o')
-    ax1.set_xlabel('Date')
-    ax1.set_ylabel('Revenue')
-    st.pyplot(fig1)
+    # Revenue trend, Customer growth, and Conversion rates in columns
+    st.subheader("KPI Trends")
+    col1, col2, col3 = st.columns(3)
 
-    # Customer growth
-    st.subheader("Customer Growth")
-    fig2, ax2 = plt.subplots()
-    ax2.plot(df['date'], df['customers'], marker='o', color='green')
-    ax2.set_xlabel('Date')
-    ax2.set_ylabel('Customers')
-    st.pyplot(fig2)
+    with col1:
+        st.caption("Revenue Trend")
+        fig1, ax1 = plt.subplots(figsize=(4, 2))
+        ax1.plot(df['date'], df['revenue'], marker='o', color='#0072B5', linewidth=1.5)
+        ax1.set_xlabel('Date', fontsize=8)
+        ax1.set_ylabel('Revenue', fontsize=8)
+        ax1.set_title('Revenue Over Time', fontsize=10, fontweight='bold')
+        ax1.grid(True, linestyle='--', alpha=0.5)
+        fig1.tight_layout()
+        fig1.autofmt_xdate(rotation=30, ha='right')
+        st.pyplot(fig1)
 
-    # Conversion rates
-    st.subheader("Conversion Rates")
-    fig3, ax3 = plt.subplots()
-    ax3.plot(df['date'], df['conversions'], marker='o', color='orange')
-    ax3.set_xlabel('Date')
-    ax3.set_ylabel('Conversions')
-    st.pyplot(fig3)
+    with col2:
+        st.caption("Customer Growth")
+        fig2, ax2 = plt.subplots(figsize=(4, 2))
+        ax2.plot(df['date'], df['customers'], marker='o', color='#3CB371', linewidth=1.5)
+        ax2.set_xlabel('Date', fontsize=8)
+        ax2.set_ylabel('Customers', fontsize=8)
+        ax2.set_title('Customer Growth', fontsize=10, fontweight='bold')
+        ax2.grid(True, linestyle='--', alpha=0.5)
+        fig2.tight_layout()
+        fig2.autofmt_xdate(rotation=30, ha='right')
+        st.pyplot(fig2)
+
+    with col3:
+        st.caption("Conversion Rates")
+        fig3, ax3 = plt.subplots(figsize=(4, 2))
+        ax3.plot(df['date'], df['conversions'], marker='o', color='#FFA500', linewidth=1.5)
+        ax3.set_xlabel('Date', fontsize=8)
+        ax3.set_ylabel('Conversions', fontsize=8)
+        ax3.set_title('Conversion Rates', fontsize=10, fontweight='bold')
+        ax3.grid(True, linestyle='--', alpha=0.5)
+        fig3.tight_layout()
+        fig3.autofmt_xdate(rotation=30, ha='right')
+        st.pyplot(fig3)
 
     # Export as PDF
     if st.button("Export Dashboard as PDF"):
