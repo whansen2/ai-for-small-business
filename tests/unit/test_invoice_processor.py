@@ -3,8 +3,6 @@ Test for operations/invoice_processor.py
 """
 import pytest
 from operations import invoice_processor
-import tempfile
-import os
 
 def test_extract_fields():
     text = "Vendor: Acme Supplies\nDate: 2024-01-15\nTotal Amount: $1,250.00"
