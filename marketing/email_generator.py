@@ -3,6 +3,7 @@ Marketing Email Generator using OpenAI
 - Generates subject, plain text, and HTML email body
 - Inputs: business_type, offer_description, tone
 - Saves .txt and .html files
+- Robust error handling and debug logging for OpenAI API calls
 """
 import openai
 from typing import Tuple
@@ -48,7 +49,7 @@ def extract_json_from_response(response_content: str):
         return {"subject": "", "plain": "", "html": ""}
 
 def generate_email(business_type: str, offer_description: str, tone: str) -> Tuple[str, str, str]:
-    """Generate subject, plain text, and HTML email using OpenAI."""
+    """Generate subject, plain text, and HTML email using OpenAI. Logs errors and raw responses for debugging."""
     prompt = (
         f"Business type: {business_type}\n"
         f"Offer: {offer_description}\n"
@@ -58,13 +59,21 @@ def generate_email(business_type: str, offer_description: str, tone: str) -> Tup
         {"role": "system", "content": EMAIL_PROMPT},
         {"role": "user", "content": prompt}
     ]
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=messages,
-        max_tokens=500
-    )
-    result = extract_json_from_response(response.choices[0].message.content)
-    return result["subject"], result["plain"], result["html"]
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            max_tokens=500
+        )
+        raw_content = response.choices[0].message.content
+        print("[DEBUG] OpenAI raw response:", raw_content)
+        result = extract_json_from_response(raw_content)
+        if not result["subject"] or not result["plain"] or not result["html"]:
+            print("[ERROR] OpenAI response missing expected fields:", result)
+        return result["subject"], result["plain"], result["html"]
+    except Exception as e:
+        print(f"[ERROR] OpenAI API call failed: {e}")
+        return (f"[ERROR] {e}", f"[ERROR] {e}", f"[ERROR] {e}")
 
 def save_email_files(subject: str, plain: str, html: str, out_dir: str = "generated_emails") -> None:
     """Save subject, plain, and HTML email to files."""

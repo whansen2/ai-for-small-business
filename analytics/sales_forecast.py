@@ -1,12 +1,14 @@
 """
 Sales Forecasting from historical CSV data using Prophet, ARIMA, and Linear Regression.
 Generates and saves forecast plots using matplotlib.
+- Robust to missing dependencies (Prophet, ARIMA)
 """
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple
 from utils.file_io import read_csv
+from sklearn.linear_model import LinearRegression
 
 # Prophet
 try:
@@ -18,8 +20,6 @@ try:
     from statsmodels.tsa.arima.model import ARIMA
 except ImportError:
     ARIMA = None
-# Linear Regression
-from sklearn.linear_model import LinearRegression
 
 
 def load_sales_data(csv_path: str) -> pd.DataFrame:

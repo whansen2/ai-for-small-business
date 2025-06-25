@@ -4,6 +4,7 @@ Monthly Business PDF Report Generator
 - Pulls customer sentiment from text or CSV
 - Uses OpenAI to write narrative summaries
 - Combines with plots into PDF using reportlab
+- Robust error handling for OpenAI and file operations
 """
 import openai
 import pandas as pd

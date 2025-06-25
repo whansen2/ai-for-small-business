@@ -34,3 +34,28 @@ def test_email_generator_with_promotion():
         assert isinstance(subject, str)
         assert isinstance(plain, str)
         assert isinstance(html, str)
+
+def test_email_generator_invalid_input():
+    # Should not raise, should return strings
+    subject, plain, html = email_generator.generate_email("", "", "")
+    assert isinstance(subject, str)
+    assert isinstance(plain, str)
+    assert isinstance(html, str)
+
+def test_email_generator_special_characters():
+    subject, plain, html = email_generator.generate_email("Retail!@#", "Offer!@#%$^&*()", "quirky!@#")
+    assert isinstance(subject, str)
+    assert isinstance(plain, str)
+    assert isinstance(html, str)
+
+def test_email_generator_long_offer():
+    long_offer = "A" * 1000
+    subject, plain, html = email_generator.generate_email("Retail", long_offer, "friendly")
+    assert long_offer[:100] in plain or long_offer[:100] in html
+
+def test_email_generator_different_tones():
+    for tone in ["formal", "quirky", "urgent", "friendly"]:
+        subject, plain, html = email_generator.generate_email("Retail", "20% off", tone)
+        assert isinstance(subject, str)
+        assert isinstance(plain, str)
+        assert isinstance(html, str)

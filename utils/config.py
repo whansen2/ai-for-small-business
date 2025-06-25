@@ -1,5 +1,7 @@
 """
 Configuration loader for environment variables and constants.
+- Loads .env securely using python-dotenv
+- Raises clear error if OPENAI_API_KEY is missing
 """
 from dotenv import load_dotenv
 import os

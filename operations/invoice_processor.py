@@ -1,6 +1,7 @@
 """
 Invoice Processor using OCR (pytesseract) for images and PDFs in data/invoices/
 Extracts Vendor, Date, Total Amount and writes output to structured CSV.
+- Robust to malformed input and missing fields
 """
 import pytesseract
 from pdf2image import convert_from_path

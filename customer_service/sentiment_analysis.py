@@ -3,6 +3,7 @@ Sentiment analysis for customer emails, messages, or reviews using OpenAI.
 - Classifies as positive, neutral, or negative with reasoning
 - Accepts single string or .csv batch
 - Outputs to terminal or .csv
+- Robust error handling for OpenAI and file I/O
 """
 import openai
 from typing import List, Dict, Optional

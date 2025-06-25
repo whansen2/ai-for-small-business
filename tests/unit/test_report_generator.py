@@ -16,3 +16,36 @@ def test_summarize_with_openai(monkeypatch):
     df = pd.DataFrame({"date": ["2024-06-01", "2024-06-02"], "sales": [100, 200]})
     summary = report_generator.summarize_with_openai(df)
     assert isinstance(summary, str) and len(summary) > 0
+
+def test_summarize_with_sentiment(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type('msg', (), {'content': 'Between June 1 and June 2, 2024, sales totaled 300. Sentiment was positive.'})
+        choices = [Choice()]
+    monkeypatch.setattr(report_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse())
+    df = pd.DataFrame({"date": ["2024-06-01", "2024-06-02"], "sales": [100, 200], "customer_sentiment": ["positive", "positive"]})
+    summary = report_generator.summarize_with_openai(df)
+    assert "sentiment" in summary.lower()
+
+def test_summarize_with_openai_malformed(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type('msg', (), {'content': ''})
+        choices = [Choice()]
+    monkeypatch.setattr(report_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse())
+    df = pd.DataFrame({"date": ["2024-06-01", "2024-06-02"], "sales": [100, 200]})
+    summary = report_generator.summarize_with_openai(df)
+    assert isinstance(summary, str)
+
+def test_summarize_with_openai_relevance(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type('msg', (), {'content': 'Total sales: 300. Average: 150.'})
+        choices = [Choice()]
+    monkeypatch.setattr(report_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse())
+    df = pd.DataFrame({"date": ["2024-06-01", "2024-06-02"], "sales": [100, 200]})
+    summary = report_generator.summarize_with_openai(df)
+    assert "300" in summary or "150" in summary

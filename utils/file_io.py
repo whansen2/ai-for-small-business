@@ -1,5 +1,6 @@
 """
 Helper functions for reading and writing CSV, JSON, and PDF files.
+- Robust to malformed files and encoding issues
 """
 import csv
 import json

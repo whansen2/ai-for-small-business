@@ -4,6 +4,7 @@ Inventory Tracker
 - When below threshold, generates restock summary (via OpenAI)
 - Optional email draft (save to .txt)
 - Outputs restock CSV
+- Robust error handling for OpenAI and file I/O
 """
 import openai
 from utils.config import OPENAI_API_KEY

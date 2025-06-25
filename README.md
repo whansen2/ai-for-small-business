@@ -1,16 +1,18 @@
 # AI for Small Business
 
-A collection of Python-based AI tools designed for small business owners. These tools focus on practical, "mom and pop" use cases—automation and intelligence that save time, reduce overhead, and boost decision-making without complexity.
+A robust, production-grade Python AI toolkit for small business owners. Focused on practical, real-world automation and intelligence—save time, reduce overhead, and boost decision-making without complexity.
 
 ## Features
-- **Customer Service**: FAQ chatbot (CLI & API), sentiment analysis for emails/reviews
-- **Marketing**: Automated marketing email generator (plain & HTML, with promotions)
+- **Customer Service**: FAQ chatbot (CLI & API), sentiment analysis for emails/reviews (OpenAI-powered, robust error handling)
+- **Marketing**: Automated marketing email generator (plain & HTML, with promotions, robust to malformed responses)
 - **Analytics**: Sales forecasting (Prophet, ARIMA, Linear Regression), KPI dashboard (Streamlit, PDF export, advanced metrics)
-- **Operations**: Invoice OCR & extraction (robust, preserves original formatting), appointment scheduler (with .ics export)
+- **Operations**: Invoice OCR & extraction (robust, preserves original formatting), appointment scheduler (with .ics export, flexible slot logic)
 - **Automation**: Monthly PDF business reports (with sales, sentiment, testimonials), inventory tracker (restock summary, email draft)
 - **Utils**: Helpers for CSV, JSON, PDF, and secure config loading
 - **Comprehensive sample data**: Realistic, safe, and fictitious CSVs for all modules
-- **Comprehensive test suite**: Pytest-based, with OpenAI call mocking
+- **Comprehensive test suite**: Pytest-based, with OpenAI call mocking, robust edge/cross-module/component tests
+- **Security**: API key loaded securely from `.env` (never hardcoded)
+- **Error Handling**: All OpenAI and file operations have robust error handling and debug logging
 
 ## Getting Started
 
@@ -45,6 +47,7 @@ A collection of Python-based AI tools designed for small business owners. These 
 - **API Key Safety:** Your OpenAI API key is never hardcoded. It is loaded from `.env` using `python-dotenv` in `utils/config.py` and imported wherever needed.
 - **Model:** All LLM tasks use OpenAI's `gpt-4o` for best results.
 - **Sample Data:** All provided data is fictitious but realistic—safe for demos and testing.
+- **Error Handling:** All modules include robust error handling and debug output for OpenAI and file operations.
 
 ## Project Structure
 ```
@@ -69,9 +72,11 @@ ai-for-small-business/
   pytest
   ```
 - All major modules are covered, with OpenAI calls mocked for reliability.
+- **Component and cross-module tests**: Real OpenAI API key required for integration tests. Tests skip gracefully if API/network is unavailable.
+- **Edge case coverage**: All modules and tests cover normal, edge, and error scenarios.
 
 ## Contributing
-Pull requests welcome! Focus on practical, simple solutions that serve small business needs.
+Pull requests welcome! Focus on practical, simple solutions that serve small business needs. All code must be modular, PEP8-compliant, and include robust error handling and tests.
 
 ## License
 MIT License

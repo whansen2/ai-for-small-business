@@ -2,6 +2,8 @@
 FAQ Chatbot for Small Business Customer Service
 - CLI chatbot loop
 - Minimal Flask API endpoint
+- Loads FAQs, locations, promotions, holidays, testimonials
+- Robust error handling for OpenAI and Flask
 """
 import openai
 from flask import Flask, request, jsonify

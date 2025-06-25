@@ -26,3 +26,134 @@ def test_generate_email(monkeypatch):
     assert isinstance(subject, str) and len(subject) > 0
     assert isinstance(plain, str) and len(plain) > 0
     assert isinstance(html, str) and len(html) > 0
+
+
+def test_generate_email_empty_offer(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": '{"subject": "No Offer", "plain": "No offer available.", "html": "<b>No offer</b>"}'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse()
+    )
+    subject, plain, html = email_generator.generate_email("Retail", "", "friendly")
+    assert isinstance(subject, str) and len(subject) > 0
+    assert isinstance(plain, str) and len(plain) > 0
+    assert isinstance(html, str) and len(html) > 0
+
+
+def test_generate_email_special_characters(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": '{"subject": "Special! @#%$^&*()", "plain": "Special chars: @#%$^&*()", "html": "<b>Special chars: @#%$^&*()</b>"}'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse()
+    )
+    subject, plain, html = email_generator.generate_email("Retail", "@#%$^&*()", "friendly")
+    assert "@#%$^&*()" in subject or "@#%$^&*()" in plain or "@#%$^&*()" in html
+
+
+def test_generate_email_long_offer(monkeypatch):
+    long_offer = "A" * 1000
+
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": '{"subject": "Long Offer", "plain": "' + long_offer + '", "html": "<b>' + long_offer + '</b>"}'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse()
+    )
+    subject, plain, html = email_generator.generate_email("Retail", long_offer, "friendly")
+    assert long_offer in plain and long_offer in html
+
+
+def test_generate_email_different_tones(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": '{"subject": "Formal", "plain": "Dear Customer,", "html": "<b>Dear Customer,</b>"}'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse()
+    )
+    subject, plain, html = email_generator.generate_email("Retail", "20% off", "formal")
+    assert "dear customer" in plain.lower() and "dear customer" in html.lower()
+
+
+def test_generate_email_html_valid(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": '{"subject": "HTML", "plain": "Plain.", "html": "<html><body><b>HTML</b></body></html>"}'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse()
+    )
+    subject, plain, html = email_generator.generate_email("Retail", "20% off", "friendly")
+    assert html.startswith("<html>") or "<b>" in html
+
+
+def test_generate_email_malformed_response(monkeypatch):
+    class MockResponse:
+        class Choice:
+            def __init__(self):
+                self.message = type(
+                    "msg",
+                    (),
+                    {
+                        "content": 'not a json string'
+                    },
+                )
+
+        choices = [Choice()]
+
+    monkeypatch.setattr(
+        email_generator.openai.ChatCompletion, "create", lambda *a, **kw: MockResponse())
+    subject, plain, html = email_generator.generate_email("Retail", "20% off", "friendly")
+    assert isinstance(subject, str)
+    assert isinstance(plain, str)
+    assert isinstance(html, str)

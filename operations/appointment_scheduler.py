@@ -4,6 +4,7 @@ Appointment Scheduler for Small Business
 - Suggests appointment slots for next 7 days
 - Uses OpenAI to format human-friendly responses
 - Exports .ics calendar invites
+- Robust to malformed bookings and flexible slot logic
 """
 import openai
 from datetime import datetime, timedelta
