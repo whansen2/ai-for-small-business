@@ -42,6 +42,10 @@ else:
 # Data processing
 if not df.empty:
     df['date'] = pd.to_datetime(df['date'])
+    # Ensure numeric columns are properly converted
+    for col in ['revenue', 'customers', 'conversions']:
+        if col in df:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
     df = df.sort_values('date')
 
     # Metrics
