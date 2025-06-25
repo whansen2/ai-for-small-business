@@ -6,7 +6,7 @@ A collection of Python-based AI tools designed for small business owners. These 
 - **Customer Service**: FAQ chatbot (CLI & API), sentiment analysis for emails/reviews
 - **Marketing**: Automated marketing email generator (plain & HTML, with promotions)
 - **Analytics**: Sales forecasting (Prophet, ARIMA, Linear Regression), KPI dashboard (Streamlit, PDF export, advanced metrics)
-- **Operations**: Invoice OCR & extraction, appointment scheduler (with .ics export)
+- **Operations**: Invoice OCR & extraction (robust, preserves original formatting), appointment scheduler (with .ics export)
 - **Automation**: Monthly PDF business reports (with sales, sentiment, testimonials), inventory tracker (restock summary, email draft)
 - **Utils**: Helpers for CSV, JSON, PDF, and secure config loading
 - **Comprehensive sample data**: Realistic, safe, and fictitious CSVs for all modules
